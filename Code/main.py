@@ -21,6 +21,7 @@ with open("../data.csv") as file:
 
 
 def Dijkstra(np_matrice):
+    """
     # Traitement de la matrice numpy pour la mettre sous forme de dictionnaire,
     # Facilitant ainsi l'utilisation des différentes données fournies par la matrice.
     for i in range(len(relations_matrice.keys())):
@@ -42,45 +43,52 @@ def Dijkstra(np_matrice):
                 if value == 0:
                     ligne[colonne].pop(key, None)
 
-    depart = "A"
-    noeuds_visites = [{depart: 0}]
-    noeud_actuel = depart
-    noeud_final = "F"
+    for i in matrice:
+        print(i)"""
 
-    if noeud_actuel != noeud_final:
-        print(noeud_actuel)
-        cle_noeud_visite = []
-        noeuds_non_visites = []
-        for i in noeuds_visites:
-            cle_noeud_visite.append(list(i.keys())[0])
-        print("Noeuds visités début du tour : ", )
-        for i in matrice:
-            if list(i.keys())[0] != depart:
-                noeuds_non_visites.append(list(i.keys())[0])
-        print("Noeuds non visités au début de ce tour : ", noeuds_non_visites)
-        for i in matrice:
-            if list(i.keys())[0] == noeud_actuel:
-                min_key = None
-                min_value = float('inf')
-                for key, value in i.items():
-                    print("Noeuds proches du noeud : ", noeud_actuel, ", ", value)
-                    for key_i, value_i in value.items():
-                        print("test", key_i)
-                        if value_i < min_value and key_i not in cle_noeud_visite:
-                            min_key = key_i
-                            min_value = value_i
-                somme_actuel = list(noeuds_visites[-1].values())[0]
-                nouvelle_somme = somme_actuel + min_value
-                noeud_actuel = min_key
-                print(noeud_actuel)
-                noeuds_visites.append({noeud_actuel: nouvelle_somme})
-                cle_noeud_visite.append(noeud_actuel)
-                print("Distance parcourue : ", noeuds_visites)
-                print("Noeud actuel : ", noeud_actuel)
-                noeuds_non_visites.remove(noeud_actuel)
-                print("Noeuds non visités a la fin du tour : ", noeuds_non_visites)
-                print("teeeeeeest", noeud_actuel)
-    else:
-        print("ok")
 
-Dijkstra(matrice_np)
+def Dijkstra(C):
+    # Initialisation de la matrice des distances de sortie.
+    # Ces distances sont initiées à l'infini.
+    D = np.full((C.shape[0], C.shape[1]), np.inf)
+
+    # Passage dans chaque ligne de la matrice
+    for source in range(C.shape[0]):
+        # Initialisation des distances à zéro pour les noeuds envers eux-mêmes
+        D[source, source] = 0
+        # Initialisation des noeuds précédents chaque noeud du graphe.
+        # Initialement à -1 car cela indique que ce noeud n'a pas encore de prédécesseur.
+        noeuds_precedents = np.full(C.shape[0], -1)
+
+        # Création de l'ensemble des noeuds non visités.
+        # Liste des indices des noeuds non-visités.
+        nodes_index = []
+        for i in range(C.shape[0]):
+            nodes_index.append(i)
+        # Passage en set pour être sûr de l'immuabilité de la liste des index
+        noeuds_non_visites = set(nodes_index)
+
+        while noeuds_non_visites:
+            # Recherche du noeud le plus proche.
+            noeud_courant = min(noeuds_non_visites, key=lambda x: D[source, x])
+            # Suppression du noeud courant des noeuds non visités.
+            noeuds_non_visites.remove(noeud_courant)
+
+            # Mise à jour des distances des voisins
+            # Passage dans chaque élément de chaque ligne de la matrice.
+            for indice_voisin, poids_voisin in enumerate(C[noeud_courant]):
+                # Si noeud pas connecté à voisin, ca passe
+                if poids_voisin == 0:
+                    continue
+                # Calcul du nouveau poids du voisin
+                nouveau_poids = D[source, noeud_courant] + poids_voisin
+                # Si nouveau poids inférieur au poids enregistré pour ce voisin :
+                # Le noeud courant change de valeur et le noeud courant est mis à jour.
+                if nouveau_poids < D[source, indice_voisin]:
+                    D[source, indice_voisin] = nouveau_poids
+                    noeuds_precedents[indice_voisin] = noeud_courant
+
+    return D
+
+distances = Dijkstra(matrice_np)
+print(distances)
