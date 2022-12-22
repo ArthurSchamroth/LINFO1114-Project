@@ -1,6 +1,5 @@
 import numpy as np
 
-
 liens = []
 relations_matrice = {}
 relations_array = []
@@ -15,6 +14,9 @@ with open("../data.csv") as file:
         else:
             relations = lines[i].strip("\n").split(", ")
             relations = np.array(relations)
+            for j in range(len(relations)):
+                if int(relations[j]) == 1000000000000:
+                    relations[j] = 0
             relations = relations.astype(int)
             liens.append(relations)
     matrice_np = np.array(liens)
@@ -89,6 +91,52 @@ def Dijkstra(C):
                     noeuds_precedents[indice_voisin] = noeud_courant
 
     return D
+
+
+def bellman_ford(np_matrix):
+    # Obtient le nombre de noeuds dans le graphe
+    num_nodes = np_matrix.shape[0]
+
+    # Initialise la matrice de sortie avec les valeurs de la matrice d'entrée
+    distances = np_matrix.copy()
+
+    # Répète l'algorithme V-1 fois
+    for i in range(num_nodes - 1):
+        # Pour chaque noeud de départ i
+        for i in range(num_nodes):
+            # Pour chaque noeud de destination j
+            for j in range(num_nodes):
+                # Pour chaque noeud intermédiaire k
+                for k in range(num_nodes):
+                    # Si le noeud de départ i et le noeud de destination j sont connectés par une arête
+                    if np_matrix[i][j] != float('inf'):
+                        # Met à jour la distance depuis la source en utilisant la formule de Bellman-Ford
+                        distances[i][j] = min(distances[i][j], distances[i][k] + np_matrix[k][j])
+
+    return distances
+
+
+# Traitement de la matrice qui contient des distances entre chaque noeuds.
+#
+# Données : Un graphe orienté pondéré.
+# Résultat : Le plus court chemin entre toute paire de sommets.
+def Floyd_Warshall(np_matrices):
+    # L'algorithme est constitué de N itération principales;
+    # pour chaque itération k, on calcule les plus courts chemins entre toute paire de sommets
+    # avec des sommets intermédiaires appartenant uniquement à l'ensemble {1,2,3,...k}
+    for k in range(len(np_matrices)):
+        for i in range(len(np_matrices)):
+            for j in range(len(np_matrices)):
+                # ici si le cout est égale à 0,ceci signifie que le cout est 10 exposant 12
+                # bien évidemment, à l'exception des elements appartenant à la diagonale.
+                if i != j and np_matrices[i][j] == 0:
+                    np_matrices[i][j] = 10 ** 12
+
+                # Le noeud courant change de la valeur s'il existe un sommet intermédiaire qui donc possède un
+                # circuit de coût plus petit.
+                np_matrices[i][j] = min(int(np_matrices[i][j]), int(np_matrices[i][k]) + int(np_matrices[k][j]))
+
+    return np_matrices
 
 distances = Dijkstra(matrice_np)
 print(distances)
