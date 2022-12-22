@@ -22,37 +22,10 @@ with open("../data.csv") as file:
     matrice_np = np.array(liens)
 
 
-def Dijkstra(np_matrice):
-    """
-    # Traitement de la matrice numpy pour la mettre sous forme de dictionnaire,
-    # Facilitant ainsi l'utilisation des différentes données fournies par la matrice.
-    for i in range(len(relations_matrice.keys())):
-        relations_matrice[list(relations_matrice.keys())[i]] = liens[i]
-    for i in relations_matrice:
-        test = {"A": 0, "B": 0, "C": 0, "D": 0, "E": 0, "F": 0, "G": 0, "H": 0, "I": 0, "J": 0}
-        for j in range(len(relations_matrice[i])):
-            test[list(test.keys())[j]] = relations_matrice[i][j]
-        relations_array.append(test)
-    for i in range(len(relations_array)):
-        objet = {}
-        if relations_array[i] != 0:
-            objet[list(relations_matrice.keys())[i]] = relations_array[i]
-        matrice.append(objet)
-
-    for ligne in matrice:
-        for colonne in ligne:
-            for key, value in list(ligne[colonne].items()):
-                if value == 0:
-                    ligne[colonne].pop(key, None)
-
-    for i in matrice:
-        print(i)"""
-
-
 def Dijkstra(C):
     # Initialisation de la matrice des distances de sortie.
-    # Ces distances sont initiées à l'infini.
-    D = np.full((C.shape[0], C.shape[1]), np.inf)
+    # Ces distances sont initialisées à l'infini.
+    D = np.full((C.shape[0], C.shape[1]), float('inf'))
 
     # Passage dans chaque ligne de la matrice
     for source in range(C.shape[0]):
@@ -90,30 +63,10 @@ def Dijkstra(C):
                     D[source, indice_voisin] = nouveau_poids
                     noeuds_precedents[indice_voisin] = noeud_courant
 
+    # Gestion des "." indésirables dans la matrice de sortie.
+    D = np.around(D)
+    D = D.astype(int)
     return D
-
-
-def bellman_ford(np_matrix):
-    # Obtient le nombre de noeuds dans le graphe
-    num_nodes = np_matrix.shape[0]
-
-    # Initialise la matrice de sortie avec les valeurs de la matrice d'entrée
-    distances = np_matrix.copy()
-
-    # Répète l'algorithme V-1 fois
-    for i in range(num_nodes - 1):
-        # Pour chaque noeud de départ i
-        for i in range(num_nodes):
-            # Pour chaque noeud de destination j
-            for j in range(num_nodes):
-                # Pour chaque noeud intermédiaire k
-                for k in range(num_nodes):
-                    # Si le noeud de départ i et le noeud de destination j sont connectés par une arête
-                    if np_matrix[i][j] != float('inf'):
-                        # Met à jour la distance depuis la source en utilisant la formule de Bellman-Ford
-                        distances[i][j] = min(distances[i][j], distances[i][k] + np_matrix[k][j])
-
-    return distances
 
 
 # Traitement de la matrice qui contient des distances entre chaque noeuds.
@@ -130,7 +83,7 @@ def Floyd_Warshall(np_matrices):
                 # ici si le cout est égale à 0,ceci signifie que le cout est 10 exposant 12
                 # bien évidemment, à l'exception des elements appartenant à la diagonale.
                 if i != j and np_matrices[i][j] == 0:
-                    np_matrices[i][j] = 10 ** 12
+                    np_matrices[i][j] = 1000000000
 
                 # Le noeud courant change de la valeur s'il existe un sommet intermédiaire qui donc possède un
                 # circuit de coût plus petit.
@@ -138,5 +91,5 @@ def Floyd_Warshall(np_matrices):
 
     return np_matrices
 
-distances = Dijkstra(matrice_np)
-print(distances)
+print(Dijkstra(matrice_np))
+print(Floyd_Warshall(matrice_np))
