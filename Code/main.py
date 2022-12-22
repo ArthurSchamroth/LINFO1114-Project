@@ -91,5 +91,36 @@ def Floyd_Warshall(np_matrices):
 
     return np_matrices
 
-print(Dijkstra(matrice_np))
-print(Floyd_Warshall(matrice_np))
+
+if __name__ == '__main__':
+    matrice_lecture = []
+    lecture = ""
+    with open("../data.csv") as file:
+        lines = file.readlines()
+        for i in range(len(lines)):
+            ligne = []
+            if i == 0:
+                continue
+            else:
+                for j in lines[i].split(", "):
+                    ligne.append(int(j))
+            matrice_lecture.append(ligne)
+    for i in range(len(matrice_lecture)):
+        print(i)
+        for j in range(len(matrice_lecture[i])):
+            print(j)
+            if j == len(matrice_lecture[i]) - 1 and matrice_lecture[i][j] == 1000000000000:
+                lecture += "∞ \n"
+            elif j == len(matrice_lecture[i]) - 1 and matrice_lecture[i][j] != 1000000000000:
+                lecture = lecture + str(matrice_lecture[i][j]) + " \n"
+            elif j != len(matrice_lecture[i]) - 1 and matrice_lecture[i][j] == 1000000000000:
+                lecture += "∞, "
+            elif j != len(matrice_lecture[i]) - 1 and matrice_lecture[i][j] != 1000000000000:
+                lecture = lecture + str(matrice_lecture[i][j]) + ", "
+
+    print("Voici la lecture de la matrice issue du CSV : ")
+    print(lecture)
+    print("Voici la matrice issue de Dijkstra : ")
+    print(Dijkstra(matrice_np))
+    print("Voici la matrice issue de Floyd-Warshall : ")
+    print(Floyd_Warshall(matrice_np))
