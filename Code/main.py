@@ -22,7 +22,7 @@ with open("../data.csv") as file:
     matrice_np = np.array(liens)
 
 
-def Dijkstra(C):
+def Dijkstra(C: np.matrix):
     # Initialisation de la matrice des distances de sortie.
     # Ces distances sont initialisées à l'infini.
     D = np.full((C.shape[0], C.shape[1]), float('inf'))
@@ -73,28 +73,60 @@ def Dijkstra(C):
 #
 # Données : Un graphe orienté pondéré.
 # Résultat : Le plus court chemin entre toute paire de sommets.
-def Floyd_Warshall(np_matrices):
+def Floyd_Warshall(C: np.matrix):
     # L'algorithme est constitué de N itération principales;
     # pour chaque itération k, on calcule les plus courts chemins entre toute paire de sommets
     # avec des sommets intermédiaires appartenant uniquement à l'ensemble {1,2,3,...k}
-    for k in range(len(np_matrices)):
-        for i in range(len(np_matrices)):
-            for j in range(len(np_matrices)):
+    for k in range(len(C)):
+        for i in range(len(C)):
+            for j in range(len(C)):
                 # ici si le cout est égale à 0,ceci signifie que le cout est 10 exposant 12
                 # bien évidemment, à l'exception des elements appartenant à la diagonale.
-                if i != j and np_matrices[i][j] == 0:
-                    np_matrices[i][j] = 1000000000
+                if i != j and C[i][j] == 0:
+                    C[i][j] = 1000000000
 
                 # Le noeud courant change de la valeur s'il existe un sommet intermédiaire qui donc possède un
                 # circuit de coût plus petit.
-                np_matrices[i][j] = min(int(np_matrices[i][j]), int(np_matrices[i][k]) + int(np_matrices[k][j]))
+                C[i][j] = min(int(C[i][j]), int(C[i][k]) + int(C[k][j]))
+    D = C
+    return D
 
-    return np_matrices
+
+def Bellman_Ford(C: np.matrix):
+    # N = Nombre de noeuds du graphe
+    N = C.shape[0]
+    nv_matrice = []
+    # Mise à jour de la matrice pour qu'elle transforme les 0 en valeur infinie sauf pour les noeuds envers eux-même
+    for i in range(len(C)):
+        ligne = []
+        for j in range(len(C[i])):
+            if i != j:
+                if C[i][j] == 0:
+                    ligne.append(float("inf"))
+                else:
+                    ligne.append(C[i][j])
+            else:
+                ligne.append(0)
+        nv_matrice.append(ligne)
+
+    # Création de la matrice des distances minimales.
+    # Les distances initiales sont celles de la matrice d'entrée.
+    D = np.array(nv_matrice)
+
+    # Répéter l'algorithme N-1 fois
+    for i in range(N - 1):
+        # Mettre à jour les distances minimales en prenant en compte tous les chemins possibles
+        for j in range(N):
+            for k in range(N):
+                if D[j, i] != np.inf and D[i, k] != np.inf:
+                    D[j, k] = min(D[j, k], D[j, i] + D[i, k])
+
+    return D
 
 
 if __name__ == '__main__':
     matrice_lecture = []
-    lecture = ""
+    lecture = "  | A, B, C, D, E, F, G, H, I, J \n"
     with open("../data.csv") as file:
         lines = file.readlines()
         for i in range(len(lines)):
@@ -106,10 +138,48 @@ if __name__ == '__main__':
                     ligne.append(int(j))
             matrice_lecture.append(ligne)
     for i in range(len(matrice_lecture)):
-        print(i)
         for j in range(len(matrice_lecture[i])):
-            print(j)
-            if j == len(matrice_lecture[i]) - 1 and matrice_lecture[i][j] == 1000000000000:
+            if i == 0 and j == 0 and matrice_lecture[i][j] == 1000000000000:
+                lecture += "A | ∞, "
+            elif i == 0 and j == 0 and matrice_lecture[i][j] != 1000000000000:
+                lecture = lecture + "A | " + str(matrice_lecture[i][j]) + ", "
+            elif i == 1 and j == 0 and matrice_lecture[i][j] == 1000000000000:
+                lecture += "B | ∞, "
+            elif i == 1 and j == 0 and matrice_lecture[i][j] != 1000000000000:
+                lecture = lecture + "B | " + str(matrice_lecture[i][j]) + ", "
+            elif i == 2 and j == 0 and matrice_lecture[i][j] == 1000000000000:
+                lecture += "C | ∞, "
+            elif i == 2 and j == 0 and matrice_lecture[i][j] != 1000000000000:
+                lecture = lecture + "C | " + str(matrice_lecture[i][j]) + ", "
+            elif i == 3 and j == 0 and matrice_lecture[i][j] == 1000000000000:
+                lecture += "D | ∞, "
+            elif i == 3 and j == 0 and matrice_lecture[i][j] != 1000000000000:
+                lecture = lecture + "D | " + str(matrice_lecture[i][j]) + ", "
+            elif i == 4 and j == 0 and matrice_lecture[i][j] == 1000000000000:
+                lecture += "E | ∞, "
+            elif i == 4 and j == 0 and matrice_lecture[i][j] != 1000000000000:
+                lecture = lecture + "E | " + str(matrice_lecture[i][j]) + ", "
+            elif i == 5 and j == 0 and matrice_lecture[i][j] == 1000000000000:
+                lecture += "F | ∞, "
+            elif i == 5 and j == 0 and matrice_lecture[i][j] != 1000000000000:
+                lecture = lecture + "F | " + str(matrice_lecture[i][j]) + ", "
+            elif i == 6 and j == 0 and matrice_lecture[i][j] == 1000000000000:
+                lecture += "G | ∞, "
+            elif i == 6 and j == 0 and matrice_lecture[i][j] != 1000000000000:
+                lecture = lecture + "G | " + str(matrice_lecture[i][j]) + ", "
+            elif i == 7 and j == 0 and matrice_lecture[i][j] == 1000000000000:
+                lecture += "H | ∞, "
+            elif i == 7 and j == 0 and matrice_lecture[i][j] != 1000000000000:
+                lecture = lecture + "H | " + str(matrice_lecture[i][j]) + ", "
+            elif i == 8 and j == 0 and matrice_lecture[i][j] == 1000000000000:
+                lecture += "I | ∞, "
+            elif i == 8 and j == 0 and matrice_lecture[i][j] != 1000000000000:
+                lecture = lecture + "I | " + str(matrice_lecture[i][j]) + ", "
+            elif i == 9 and j == 0 and matrice_lecture[i][j] == 1000000000000:
+                lecture += "J | ∞, "
+            elif i == 9 and j == 0 and matrice_lecture[i][j] != 1000000000000:
+                lecture = lecture + "J | " + str(matrice_lecture[i][j]) + ", "
+            elif j == len(matrice_lecture[i]) - 1 and matrice_lecture[i][j] == 1000000000000:
                 lecture += "∞ \n"
             elif j == len(matrice_lecture[i]) - 1 and matrice_lecture[i][j] != 1000000000000:
                 lecture = lecture + str(matrice_lecture[i][j]) + " \n"
@@ -124,3 +194,5 @@ if __name__ == '__main__':
     print(Dijkstra(matrice_np))
     print("Voici la matrice issue de Floyd-Warshall : ")
     print(Floyd_Warshall(matrice_np))
+    print("Voici la matrice issue de Bellman-Ford : ")
+    print(Bellman_Ford(matrice_np))
